@@ -1,12 +1,14 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { StoreOptions } from "vuex";
+import { count } from "./modules/count";
+import { RootState } from "./types";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {},
-  getters: {},
-  mutations: {},
-  actions: {},
-  modules: {},
-});
+const store: StoreOptions<RootState> = {
+  modules: {
+    count: count
+  }
+}
+
+export default new Vuex.Store(store);

@@ -1,114 +1,69 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript"
-          target="_blank"
-          rel="noopener"
-          >typescript</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex"
-          target="_blank"
-          rel="noopener"
-          >vuex</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
+    <h1>{{ user.name }}</h1>
+    <user-detail :user="user" />
+    <p>{{ counter }}</p>
+    <button @click="changeName('Typescript')">Change name</button>
+    <button @click="changeAge(20)">Change age</button>
+    <button @click="setCounter">set counter</button>
+    <button @click="getCounter">get counter</button>
   </div>
 </template>
 
 <script lang="ts">
+// import { CountState } from "@/store/modules/count";
+import { ActionTypes } from "@/store/modules/count/action-types";
+import { MutationTypes } from "@/store/modules/count/mutations-type";
+import { RootState } from "@/store/types";
 import Vue from "vue";
+import { mapState } from "vuex";
+import { User } from "../type";
+import UserDetail from "./UserDetail.vue";
+
+export interface Data {
+  user: User;
+  text: string;
+}
+
+export interface MapState {
+  counter: (state: RootState) => number;
+}
 
 export default Vue.extend({
+  components: { UserDetail },
   name: "HelloWorld",
   props: {
     msg: String,
+  },
+  data(): Data {
+    return {
+      user: {
+        name: "s",
+        age: 1,
+      },
+      text: "test",
+    };
+  },
+  computed: {
+    ...mapState<RootState, MapState>({
+      counter: (state: RootState): number => state.count.counter,
+    }),
+  },
+  methods: {
+    changeName(name: string): void {
+      this.user.name = name;
+    },
+    changeAge(age: number) {
+      this.user.age = age;
+    },
+    setCounter() {
+      this.$store.commit(MutationTypes.SET_COUNTER, 10);
+    },
+    async getCounter() {
+      const result = await this.$store.dispatch(ActionTypes.GET_COUNTER);
+      console.log("result :>> ", result);
+    },
   },
 });
 </script>
